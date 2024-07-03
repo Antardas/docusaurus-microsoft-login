@@ -1,6 +1,6 @@
 ---
 title: Stage Management
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 _Below documentation relevant for Interactive Livestream(LHLS) and Webinar(WebRTC) use cases_
@@ -12,7 +12,7 @@ Using Dyte's stage management APIs a user can do actions such as leave and join 
 
 ## Access the stage APIs
 
-The stage module can be accessed under [`meeting.stage`](/react-web-core/reference/DyteStage) namespace.
+The stage module can be accessed under [`meeting.stage`](/docs/room-metadata) namespace.
 
 ## Properties
 
