@@ -1,47 +1,108 @@
 ---
-sidebar_position: 1
+title: Stage Management
+sidebar_position: 2
 ---
 
-# Tutorial Intro
+_Below documentation relevant for Interactive Livestream(LHLS) and Webinar(WebRTC) use cases_
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Instead of a traditional publish-subscribe model, where a user can publish their media and others can choose to subscribe, Dyte comes with an optional managed configuration.
+In this managed configuration, a less privileged can be configured with a default behavior to not publish media and the user can then request for permission to be allowed to publish their media, where then a privileged user can choose to grant or deny access.
 
-## Getting Started
+Using Dyte's stage management APIs a user can do actions such as leave and join stage, manage stage requests and permissions, kick participants and so on.
 
-Get started by **creating a new site**.
+## Access the stage APIs
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+The stage module can be accessed under [`meeting.stage`](/react-web-core/reference/DyteStage) namespace.
 
-### What you'll need
+## Properties
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+### Status
 
-## Generate a new site
+`meeting.stage.status` returns the current stage status of the local user
 
-Generate a new Docusaurus site using the **classic template**.
+- **ON_STAGE**: This value indicates that the user is currently on the stage and participating in the live stream.
+- **OFF_STAGE**: This value means that the user is viewing the live stream but is not on the stage.
+- **REQUESTED_TO_JOIN_STAGE**: The user has a pending request to join livestream. If the user has made a request to join the stage, this value will be assigned to their status until the host accepts or rejects their request.
+- **ACCEPTED_TO_JOIN_STAGE**: The host has accepted user's request to join livestream. If the host accepts the user's request to join the stage, this value will be assigned to the user's status.
 
-The classic template will automatically be added to your project after you run the command:
+A user with permission to join stage directly can only assume `ON_STAGE` and `ACCEPTED_TO_JOIN_STAGE` status values.
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+## Host controls
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+Dyte's stage management APIs allow hosts to receive and manage stage requests as well as leave and join the stage.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+### Join stage
 
-## Start your site
+This method connects the user to the media room, enabling them to interact with other peers in the meeting.
 
-Run the development server:
+`await meeting.stage.join();`
 
-```bash
-cd my-website
-npm run start
-```
+### Leave stage
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+By employing this method, the user will be disconnected from the media room and subsequently unable to communicate with their peers. Additionally, their audio and video will no longer be visible to others in the room.
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+`await meeting.stage.leave();`
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+### Grant access
+
+A privileged user can grant access to stage for a set of users with `grantAccess` method.
+
+| **Parameters** | **Type** |
+| -------------- | -------- |
+| userIds        | string[] |
+
+`await meeting.stage.grantAccess(userIds);`
+
+### Deny access
+
+A privileged user can deny access to stage for a set of users with `denyAccess` method.
+
+| **Parameters** | **Type** |
+| -------------- | -------- |
+| userIds        | string[] |
+
+`await meeting.stage.denyAccess(userIds);`
+
+### Kick users
+
+A privileged user can remove a set of users from stage using the `kick` method
+
+| **Parameters** | **Type** |
+| -------------- | -------- |
+| userIds        | string[] |
+
+`await meeting.stage.kick(userIds);`
+
+## Participant controls
+
+Dyte's stage management APIs allow participants to receive and manage stage requests as well as leave and join the stage.
+
+### Request access
+
+This method is used to create a new stage request which can be approved by the host. Each user (viewer or host) must call this method in order to join the stage.
+
+When the host calls this method, their status will be updated to `ACCEPTED_TO_JOIN_STAGE`.
+
+`await meeting.stage.requestAccess();`
+
+### Cancel access request
+
+You can call this method in order to cancel your stage request.
+
+`await meeting.stage.cancelRequestAccess();`
+
+## Events
+
+Here is a list of events that the `meeting.stage` module emits:
+
+| **Event**                  | **Description**                                                                                                                                                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stageAccessRequestUpdate` | Emitted to the users with the permission `acceptPresentRequests` set to true. When a new request is made or a request is cancelled, this event is triggered. It contains the updated list of stage requests in its payload.           |
+| `stageStatusUpdate`        | Emitted when the user's stage status changes. It contains the updated stage status in the payload.                                                                                                                                    |
+| `newStageRequest`          | Emitted to the users with the permission `acceptPresentRequests` set to true. This event is triggered when there are new stage requests. It contains the number of stage requests in its payload. For example, to show notifications. |
+| `stageRequestApproved`     | Emitted when a user's request to join stage has been approved.                                                                                                                                                                        |
+| `stageRequestRejected`     | Emitted when a user's request to join stage has been rejected.                                                                                                                                                                        |
+
+<head>
+  <title>Web Core Stage Management</title>
+</head>
