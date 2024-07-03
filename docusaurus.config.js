@@ -13,7 +13,7 @@ const config = {
 	favicon: 'img/favicon.ico',
 	
 	url: 'https://antardas.github.io', // Your website URL
-  baseUrl: '/',
+  baseUrl: '/docusaurus-microsoft-login/',
   projectName: 'antardas.github.io',
   organizationName: 'antardas',
   trailingSlash: false,
